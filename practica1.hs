@@ -100,4 +100,26 @@ data ArbolBinario
 
 cantidadNodos :: ArbolBinario -> Int
 
-cantidadNodos a = 
+cantidadNodos (Nodo a) = 1
+cantidadNodos (Rama izq der valor) =1 + cantidadNodos izq + cantidadNodos der
+
+-------------------------------------------
+
+sumarArbol :: ArbolBinario -> Int
+
+sumarArbol (Nodo a) = a
+sumarArbol (Rama izq der valor) = sumarArbol izq + sumarArbol der + valor
+
+-------------------------------------------
+
+
+mapParaArboles :: (Int -> Int) -> ArbolBinario -> ArbolBinario  
+mapParaArboles funcion (Nodo valor) = Nodo (funcion valor)
+mapParaArboles funcion (Rama izq der valor) 
+    = Rama (mapParaArboles funcion izq) (mapParaArboles funcion der) (funcion valor)   
+
+--------------------------------------------
+
+duplicarArbol :: ArbolBinario -> ArbolBinario
+
+duplicarArbol = mapParaArboles(*2)
