@@ -123,3 +123,13 @@ mapParaArboles funcion (Rama izq der valor)
 duplicarArbol :: ArbolBinario -> ArbolBinario
 
 duplicarArbol = mapParaArboles(*2)
+
+--------------------------------------------
+
+valoresPares :: ArbolBinario -> [Int]
+
+valoresPares (Nodo valor) = if mod valor 2 == 0 then [valor] else []
+
+valoresPares (Rama izq der valor) = valoresPares(izq) ++ valoresPares(der) ++ if mod valor 2 == 0 then [valor] else []
+
+-------------------------------------------
