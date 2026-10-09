@@ -47,3 +47,22 @@ take 10 multiplosDeTres -- toma los pimeros 10 elementos de la ista
 
 --------------------------------------------------------------------------------
 
+factorial 0 = 1
+factorial n = n * factorial (n - 1)
+
+factorialPares :: [Integer]
+
+factorialPares = [2,8,24,48,...]
+
+----------------------------------------------------------------------------------
+
+data Persona = Persona {
+    nombre :: String,
+    edad :: Int
+}
+    deriving (Show,Eq,Ord)
+
+personas :: [Persona]
+
+
+
