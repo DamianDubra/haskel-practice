@@ -43,14 +43,13 @@ import Control.Exception (SomeException, evaluate, try)
   e) class Describible where ///// falta la a en la declaracion
          description :: a -> String
   f) instance Eq Estacion where  //// falta el = True y tambien cuando no sea truw que el resto sea false
-  
          Verano == Verano True
-  g) multiplosDeTres = [3,6,...]
+  g) multiplosDeTres = [3,6,...] /// va sin la , y con .. falta la lista con el =
      take 10 multiplosDeTres          -- escrito suelto en el archivo
-  h) todosPositivos [] = error "lista vacia"
+  h) todosPositivos [] = error "lista vacia"   /////  lineas innecesaria
      todosPositivos xs = all (\x -> x > 0) xs
      -- ¿Qué devuelve `all` con lista vacía? ¿Hace falta ese caso?
-  i) mayoresADiez xs = filter (\x -> x > 10 == True) xs   -- ¿qué sobra?
+  i) mayoresADiez xs = filter (\x -> x > 10 == True) xs   -- ¿qué sobra? ///// el True
   j) Definir `data Color = ...` dos veces en el mismo archivo.
 -}
 
@@ -62,20 +61,28 @@ import Control.Exception (SomeException, evaluate, try)
 
 -- 1.1 El mayor elemento. Con lista vacía, error.
 maximo :: [Int] -> Int
-maximo = undefined
+maximo [] = error "lista vacia"
+maximo [x] = x
+maximo (x:xs) = max x (maximo xs)
 
 -- 1.2 Dar vuelta una lista.
 reverso :: [a] -> [a]
-reverso = undefined
+reverso [] = []
+reverso [x] = [x]
+reverso (x:xs) = (reverso xs) ++ [x]
 
 -- 1.3 ¿Está el elemento en la lista?  (fijate la restricción Eq a)
 pertenece :: Eq a => a -> [a] -> Bool
-pertenece = undefined
+pertenece _ [] = False
+pertenece a (x:xs) = e==x || (pertenece a xs)
 
 -- 1.4 Saca SÓLO la primera aparición del elemento.
 --     sacarUna 2 [1,2,3,2] == [1,3,2]
 sacarUna :: Eq a => a -> [a] -> [a]
-sacarUna = undefined
+sacarUna [] = []
+sacarUna a (x:xs)=
+  |a == x = xs
+  |otherwise = x (sacarUna a xs)
 
 -- 1.5 Elimina repetidos conservando la primera aparición. Podés usar filter.
 --     sinRepetidos [1,2,1,3,2] == [1,2,3]
