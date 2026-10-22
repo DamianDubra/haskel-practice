@@ -30,10 +30,10 @@ data TipoNumeros = Positivo
 data Estacion = Verano | Otono | Invierno | Primavera
 
 instance Eq Estacion where
-    Verano == Verano True
-    Otono == Otono True
-    Invierno == Invierno True
-    Primavera == Primavera True
+    Verano == Verano = True
+    Otono == Otono = True
+    Invierno == Invierno = True
+    Primavera == Primavera = True
     _ == _ False  -- _ significa todo el resto de combinaciones, simepre para al final porque se evalua en orden de arriba abajo
 
 -------------------------------------------------------------------------------

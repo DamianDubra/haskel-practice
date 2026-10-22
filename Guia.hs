@@ -40,9 +40,10 @@ import Control.Exception (SomeException, evaluate, try)
   c) hayPar xs = any (\x -> x 'mod' 2 == 0) xs ///// comillas al reves
   d) perimetro (circulo radio) = 2 * 3.14 * radio ///// Circulo y Rectangulo tiene que tener mayuscula
      primetro (rectangulo b a) = 2 * (b + a) ///// error de tipeo
-  e) class Describible where
+  e) class Describible where ///// falta la a en la declaracion
          description :: a -> String
-  f) instance Eq Estacion where
+  f) instance Eq Estacion where  //// falta el = True y tambien cuando no sea truw que el resto sea false
+  
          Verano == Verano True
   g) multiplosDeTres = [3,6,...]
      take 10 multiplosDeTres          -- escrito suelto en el archivo
