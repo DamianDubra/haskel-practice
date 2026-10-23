@@ -303,15 +303,18 @@ tamanio (Nodo i _ d) = 1+ tamanio (i) + tamanio (d)
 
 -- 4.2 Altura: cantidad de niveles (Vacio tiene altura 0, una hoja 1).
 altura :: Arbol a -> Int
-altura = undefined
+altura Vacio = 0
+altura (Nodo i _ d) = 1+ max (altura i) (altura d)--compara el arbol con mayor altura 
 
 -- 4.3 Espejo: intercambia izquierdo y derecho en todos los niveles.
 espejo :: Arbol a -> Arbol a
-espejo = undefined
+espejo Vacio = Vacio
+espejo (Nodo i v d) = Nodo (espejo d) v (espejo i) 
 
 -- 4.4 map para árboles, ahora puede cambiar el tipo (a -> b).
 mapArbol :: (a -> b) -> Arbol a -> Arbol b
-mapArbol = undefined
+mapArbol _ Vacio = Vacio
+mapArbol func (Nodo i v d) = Nodo (mapArbol func i) (func v) (mapArbol func d)
 
 -- 4.5 Valores de las hojas (nodos sin hijos), de izquierda a derecha.
 --     hojas arbolEjemplo == [1,7,9]
