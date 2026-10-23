@@ -71,9 +71,9 @@ todosPositivos xs = all (\x -> x > 0) xs
 -------------------------------------------
 
 perimetro :: FiguraGeometrica -> Float
-perimetro (circulo radio) = 2 * 3.14*radio
-perimetro (cuadrado lado) =  4*lado
-primetro (rectangulo b a) =  2*( b + a)
+perimetro (Circulo radio) = 2 * 3.14*radio
+perimetro (Cuadrado lado) =  4*lado
+primetro (Rectangulo b a) =  2*( b + a)
 
 -------------------------------------------
 

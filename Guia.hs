@@ -1,6 +1,7 @@
 module Guia where
 
 import Control.Exception (SomeException, evaluate, try)
+import Data.ByteString (partition)
 
 {-
 ================================================================================
@@ -74,40 +75,55 @@ reverso (x:xs) = (reverso xs) ++ [x]
 -- 1.3 ¿Está el elemento en la lista?  (fijate la restricción Eq a)
 pertenece :: Eq a => a -> [a] -> Bool
 pertenece _ [] = False
-pertenece a (x:xs) = e==x || (pertenece a xs)
+pertenece a (x:xs) = a == x || (pertenece a xs)
 
 -- 1.4 Saca SÓLO la primera aparición del elemento.
 --     sacarUna 2 [1,2,3,2] == [1,3,2]
 sacarUna :: Eq a => a -> [a] -> [a]
-sacarUna [] = []
-sacarUna a (x:xs)=
-  |a == x = xs
-  |otherwise = x (sacarUna a xs)
+sacarUna _ [] = []
+sacarUna a (x:xs)
+      |a == x = xs
+      |otherwise = x : (sacarUna a xs)
 
 -- 1.5 Elimina repetidos conservando la primera aparición. Podés usar filter.
 --     sinRepetidos [1,2,1,3,2] == [1,2,3]
 sinRepetidos :: Eq a => [a] -> [a]
-sinRepetidos = undefined
+sinRepetidos []= []
+sinRepetidos (x:xs) = x : sinRepetidos (filter(/=x) xs)
+  
 
 -- 1.6 Intercala dos listas. Si una se termina, sigue con la otra.
 --     intercalar [1,3,5] [2,4] == [1,2,3,4,5]
 intercalar :: [a] -> [a] -> [a]
-intercalar = undefined
+intercalar [] [] = []
+intercalar [] xs = xs
+intercalar xl [] = xl
+intercalar (x1:xl) (x2:xs) = [x1] ++ [x2] ++ (intercalar xl xs) 
+
 
 -- 1.7 Aplanar una lista de listas.  aplanar [[1,2],[],[3]] == [1,2,3]
 aplanar :: [[a]] -> [a]
-aplanar = undefined
+aplanar []= []
+aplanar (xs:xss) = xs ++ (aplanar xss)  
 
 -- 1.8 Posiciones (desde 0) donde aparece el elemento.
 --     posicionesDe 'a' "banana" == [1,3,5]
 --     Pista: una función auxiliar que lleve el índice actual.
+
 posicionesDe :: Eq a => a -> [a] -> [Int]
-posicionesDe = undefined
+posicionesDe e = desde 0 where
+  desde _ [] =[]
+  desde i (x:xs)
+    |e == x = i : desde (i+1)xs
+    |otherwise = desde (i+1)xs
+
+
+
 
 -- 1.9 (*) Partir en grupos de n.  partirEn 2 [1..5] == [[1,2],[3,4],[5]]
 --     Acá sí podés usar take y drop.
 partirEn :: Int -> [a] -> [[a]]
-partirEn = undefined
+partirEn n xs = [take n xs] ++ partirEn n(drop n xs) -- el drop descarta las primeros dos y toma el resto de la lista
 
 nivel1 :: [(String, Bool)]
 nivel1 =
@@ -134,44 +150,54 @@ nivel1 =
 
 -- 2.1 Tu propio filter, con recursión.
 miFilter :: (a -> Bool) -> [a] -> [a]
-miFilter = undefined
+miFilter func [] = []
+miFilter func (x:xs)
+  |func x == True = x : (miFilter func xs)
+  |otherwise = miFilter func xs
 
 -- 2.2 Cuántos elementos cumplen. Escribila en UNA línea, con composición (.)
 --     cuantosCumplen even [1,2,3,4] == 2
 cuantosCumplen :: (a -> Bool) -> [a] -> Int
-cuantosCumplen = undefined
+cuantosCumplen func xs = length (filter func xs)
 
 -- 2.3 Aplicar una función n veces.  aplicarNVeces 3 (*2) 1 == 8
 aplicarNVeces :: Int -> (a -> a) -> a -> a
-aplicarNVeces = undefined
+aplicarNVeces 0 _ a = a
+aplicarNVeces n func a = func (aplicarNVeces (n-1) func a) 
 
 -- 2.4 Aplicar una lista de funciones EN ORDEN, de izquierda a derecha.
 --     componerTodas [(+1), (*2)] 5 == 12      -- primero +1 -> 6, después *2 -> 12
 --     componerTodas [] 5 == 5
 componerTodas :: [a -> a] -> a -> a
-componerTodas = undefined
+componerTodas [] a = a
+componerTodas (x:xs) a = (componerTodas xs (x a))
 
 -- 2.5 El elemento que maximiza un criterio. Si hay empate, el primero.
 --     mejorSegun length ["hola","a","chau!"] == "chau!"
 --     mejorSegun negate [3,1,2] == 1
 --     Esta la vas a reusar en el nivel 7.
 mejorSegun :: Ord b => (a -> b) -> [a] -> a
-mejorSegun = undefined
+mejorSegun _ [] = error "lista vacia"
+mejorSegun _ [x] = x
+mejorSegun func (x:xs)
+  |func x >= func (mejorSegun  func xs) = x
+  |otherwise = mejorSegun func xs
 
 -- 2.6 Point-free (sin nombrar la lista): suma de los cuadrados de los pares.
 --     sumaDeCuadradosDePares [1,2,3,4] == 20
 sumaDeCuadradosDePares :: [Int] -> Int
-sumaDeCuadradosDePares = undefined
+sumaDeCuadradosDePares [] = 0
+sumaDeCuadradosDePares (x:xs) = if even x then (x*x) + sumaDeCuadradosDePares xs else sumaDeCuadradosDePares xs
 
 -- 2.7 Point-free: las longitudes de las palabras que tienen más de n letras.
 --     largosMayoresA 3 ["sol","casa","a","perro"] == [4,5]
 largosMayoresA :: Int -> [String] -> [Int]
-largosMayoresA = undefined
+largosMayoresA n = map length . filter( \x -> length x > n)
 
 {-
   2.8 Teórico (sin ghci primero, después chequeá con :t):
       ¿Cuál es el tipo de cada expresión?
-      a) cuantosCumplen even
+      a) cuantosCumplen even :: (a->Bool)->[a] -> Int
       b) map (*2) . filter odd
       c) misterio f g = filter f . map g        -- tipo de misterio
       d) flip take
@@ -272,7 +298,8 @@ inorder (Nodo i v d) = inorder i ++ [v] ++ inorder d
 
 -- 4.1 Cantidad de nodos.
 tamanio :: Arbol a -> Int
-tamanio = undefined
+tamanio Vacio = 0
+tamanio (Nodo i _ d) = 1+ tamanio (i) + tamanio (d)
 
 -- 4.2 Altura: cantidad de niveles (Vacio tiene altura 0, una hoja 1).
 altura :: Arbol a -> Int
