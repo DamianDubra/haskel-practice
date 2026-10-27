@@ -75,3 +75,51 @@ componer :: [a -> a] -> (a -> a). La lista [f, g, h] tiene que comportarse como 
 componer [(+ 1), (* 2)] 5  -- 11
 componer [(* 2), (+ 1)] 5  -- 12-}
 
+componer :: [a -> a] -> (a -> a)
+componer [] = id
+componer (x:xs) = x . componer xs
+{- OPCION 2
+componer :: [a -> a] -> (a -> a)
+componer = foldr (.) id-}
+
+{-6. Contar los que cumplen
+contarSi :: (a -> Bool) -> [a] -> Int
+
+contarSi even [1 .. 10]     -- 5
+contarSi (> 'm') "haskell"  -- 1-}
+
+contarSi :: (a -> Bool) -> [a] -> Int
+contarSi _ [] = 0
+contarSi func (x:xs) 
+    |func x == True = (contarSi func xs) +1
+    | otherwise = contarSi func xs
+
+{-7. Lista de funciones, un argumento
+aplicarATodos :: [a -> b] -> a -> [b]. Escribila dos veces: aplicarATodos con una lambda y aplicarATodos' usando la aplicacion parcial de "$" ($ x).
+
+aplicarATodos [(+ 1), (* 2), (^ 2)] 5  -- [6,10,25]-}
+
+aplicarATodos :: [a -> b] -> a -> [b]
+aplicarATodos [] _ = []
+aplicarATodos xs a = map (\x-> x a) xs
+
+aplicarATodos' :: [a -> b] -> a -> [b]
+aplicarATodos' [] _ = []
+aplicarATodos' xs a = map ($ a) xs
+
+{-8. Producto escalar
+productoEscalar :: [Double] -> [Double] -> Double, usando zipWith.
+
+productoEscalar [1, 2, 3] [4, 5, 6]  -- 32.0-}
+productoEscalar :: [Double] -> [Double] -> Double
+productoEscalar _ [] = 0.0
+productoEscalar [] _ = 0.0
+productoEscalar xs1 xs2 = sum (zipWith (*) xs1 xs2)
+--zipwith toma una funcion y la e¿aplica entre los elementos de una lista , [primer elemento xs1 * primer elemento xs2 , segundo elemento xs1 * segundo elemento xs2] 
+
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-- PATTER MACHINE
+
+
