@@ -1,3 +1,4 @@
+import GHC.Exts.Stack.Constants (sizeStgRetFunFrame)
 --LAZY  
 
 --1. Rangos infinitos
@@ -123,3 +124,59 @@ productoEscalar xs1 xs2 = sum (zipWith (*) xs1 xs2)
 -- PATTER MACHINE
 
 
+{-1. Literales
+describirNumero :: Int -> String: "cero" para 0, "uno" para 1, "muchos" para el resto.
+
+map describirNumero [0, 1, 7]  -- ["cero","uno","muchos"]-}
+
+describirNumero :: Int -> String
+describirNumero a
+    |a==0 = "Cero"
+    |a==1 = "Uno"
+    |otherwise = "muchos"
+
+{-2. Tuplas
+primero :: (a, b, c) -> a
+intercambiar :: (a, b) -> (b, a)
+primero (1, "a", True)  -- 1
+intercambiar (1, "a")   -- ("a",1)-}
+
+primero :: (a, b, c) -> a
+primero (x,_,_) = x
+
+intercambiar :: (a, b) -> (b, a)
+intercambiar (x,y) = (y,x)
+
+{-3. Listas
+cabeza :: [a] -> Maybe a
+segundo :: [a] -> Maybe a (el segundo elemento, si existe)
+tieneExactamenteDos :: [a] -> Bool, sin usar length
+(cabeza "", cabeza "abc")         -- (Nothing,Just 'a')
+(segundo [1], segundo [1, 2, 3])  -- (Nothing,Just 2)
+tieneExactamenteDos [1, 2]        -- True-}
+
+cabeza :: [a] -> Maybe a
+cabeza []= Nothing
+cabeza (x:xs)= Just x
+-- maybe puede o no tener nada, solo salva errores de ejerccicion, tiene el formato Nothing | Just a, si esta vacia va el nothing y si tiene algo dice simplemente una a
+
+segundo :: [a] -> Maybe a
+segundo [] = Nothing
+segundo [_]= Nothing
+segundo (x:xs:xss) = Just xs
+
+tieneExactamenteDos :: [a] -> Bool
+tieneExactamenteDos xs
+    |length(xs) == 2 = True
+    |otherwise =False
+
+tieneExactamenteDos' :: [a] -> Bool
+tieneExactamenteDos' [_, _] = True
+tieneExactamenteDos' _ = False
+
+{-4. Maybe
+desdeMaybe :: a -> Maybe a -> a: devuelve el valor, o el default si es Nothing.
+sumarMaybes :: Maybe Int -> Maybe Int -> Maybe Int: Just de la suma si ambos son Just, si no Nothing.
+desdeMaybe 0 (Just 5)          -- 5
+sumarMaybes (Just 1) (Just 2)  -- Just 3
+sumarMaybes (Just 1) Nothing   -- Nothing-}
