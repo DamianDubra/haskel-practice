@@ -180,3 +180,60 @@ sumarMaybes :: Maybe Int -> Maybe Int -> Maybe Int: Just de la suma si ambos son
 desdeMaybe 0 (Just 5)          -- 5
 sumarMaybes (Just 1) (Just 2)  -- Just 3
 sumarMaybes (Just 1) Nothing   -- Nothing-}
+
+desdeMaybe :: a -> Maybe a -> a
+desdeMaybe a Nothing = a
+desdeMaybe _ (Just b) = b
+
+sumarMaybes :: Maybe Int -> Maybe Int -> Maybe Int
+sumarMaybes Nothing Nothing = Nothing
+sumarMaybes (Just _) Nothing = Nothing  -- por el enunciado, si no puede devolver el jus y algo
+sumarMaybes Nothing (Just _) = Nothing
+sumarMaybes (Just a) (Just b) = Just(a+b)
+
+{-5. Guardas
+clasificarNota :: Int -> String: "invalida" fuera de 0..10, "desaprobado" si es menor a 4, "aprobado" si es menor a 7, "promocionado" en otro caso.
+
+map clasificarNota [2, 5, 9, 11]
+-- ["desaprobado","aprobado","promocionado","invalida"]-}
+
+clasificarNota :: Int -> String
+clasificarNota nota
+    |nota <0 = "invalida"
+    |nota > 10 = "invalida"
+    |nota < 4 = "desaprobado"
+    |nota < 7 = "aprobado"
+    |otherwise = "promocion"
+
+{-6. Records
+Dado data Punto = Punto { px :: Double, py :: Double }:
+
+esOrigen :: Punto -> Bool, matcheando por posición: (Punto 0 0).
+estaEnEjeY :: Punto -> Bool, matcheando por nombre de campo: (Punto { px = 0 }).
+cuadrante :: Punto -> Int: 1 a 4, o 0 si está sobre algún eje.
+map cuadrante [Punto 1 1, Punto (-1) 1, Punto (-1) (-1), Punto 1 (-1), Punto 0 3]
+-- [1,2,3,4,0]-}
+
+data Punto = Punto { px :: Double, py :: Double }
+
+
+esOrigen :: Punto -> Bool
+esOrigen (Punto px py) = if px == 0 && py == 0 then True else False
+
+esOrigen' :: Punto -> Bool
+esOrigen' (Punto x y) = x == 0 && y == 0-- opcion sin el if
+
+estaEnEjeY :: Punto -> Bool
+estaEnEjeY (Punto px py) = px == 0 && py /= 0 -- no verifica por nombre de campo pero es valido
+
+estaEnEjeY' :: Punto -> Bool
+estaEnEjeY' (Punto { px = 0 }) = True -- caso 1 que en x sea 0 entonces esta sobre y en cualquier valor
+estaEnEjeY' _ = False -- caso 2 cualquier que no este en x 0 es invalido
+
+cuadrante :: Punto -> Int
+cuadrante (Punto px py)
+    |px == 0 || py==0 = 0
+    |px >0 && py >0 = 1
+    |px<0 && py>0 =2
+    |px<0 && py<0 =3
+    |otherwise = 4
