@@ -1,4 +1,5 @@
-import GHC.Exts.Stack.Constants (sizeStgRetFunFrame)
+import Distribution.Simple.Utils (xargs)
+
 --LAZY  
 
 --1. Rangos infinitos
@@ -237,3 +238,85 @@ cuadrante (Punto px py)
     |px<0 && py>0 =2
     |px<0 && py<0 =3
     |otherwise = 4
+
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+-- Polimorfismo paramétrico y ad-hoc (clases de tipo)
+
+{-1. Funciones paramétricas
+identidad :: a -> a
+duplicar :: a -> (a, a)
+aplicarPar :: (a -> b) -> (a, a) -> (b, b)
+(identidad 'a', duplicar True, aplicarPar (+ 1) (1, 2))  -- ('a',(True,True),(2,3))-}
+
+identidad :: a -> a
+identidad a = a
+
+duplicar :: a -> (a, a)
+duplicar a = (a,a)
+
+aplicarPar :: (a -> b) -> (a, a) -> (b, b)
+aplicarPar func (a,b) = (func a, func b)
+
+{-2. Tipos paramétricos
+Definí data Par a b = Par a b y data Caja a = Caja a (derivando Show) y escribí:
+
+intercambiarPar :: Par a b -> Par b a
+mapCaja :: (a -> b) -> Caja a -> Caja b
+intercambiarPar (Par 1 "a")   -- Par "a" 1
+mapCaja length (Caja "hola")  -- Caja 4-}
+
+data Par a b = Par a b
+
+data Caja a = Caja a
+    deriving(Show)
+
+
+intercambiarPar :: Par a b -> Par b a
+intercambiarPar (Par a b) = (Par b a)
+
+mapCaja :: (a -> b) -> Caja a -> Caja b
+mapCaja func (Caja a) = (Caja (func a))
+
+{-3. ¿Qué restricción hace falta?
+Escribí las funciones y poné en la firma la restricción de clase mínima que necesita cada una:
+
+maximoDe :: ??? => [a] -> a
+sumarTodos :: ??? => [a] -> a
+buscar :: ??? => k -> [(k, v)] -> Maybe v
+maximoDe "haskell"               -- 's'
+sumarTodos [1.5, 2.5]            -- 4.0
+buscar "b" [("a", 1), ("b", 2)]  -- Just 2-}
+
+maximoDe :: Ord a => [a] -> a
+maximoDe [x] = x
+maximoDe (x:xs) = max x (maximoDe xs)
+
+sumarTodos :: Num a => [a] -> a
+sumarTodos [x] = 0
+sumarTodos (x:xs) = x + sumarTodos(xs)
+
+buscar :: Eq k => k -> [(k, v)] -> Maybe v
+buscar _ [] = Nothing
+buscar k ((c, v):resto)
+    |k == c = Just v 
+    |otherwise = buscar k resto
+
+{-4. Instancia de Show a mano
+Dado data Punto = Punto Double Double (sin deriving), escribí instance Show Punto para que se muestre como (1.0, 2.5).
+
+deriving (Eq, Ord, Show)-}
+
+data Punto' = Punto' Double Double
+
+instance Show Punto' where
+    show (Punto' a b) = "("++show a++", "++show b++")"
+
+{-5. Eq y Ord a mano
+Dado el record Persona { nombre :: String, edad :: Int }:
+
+instance Eq Persona: dos personas son iguales si tienen el mismo nombre.
+instance Ord Persona: se ordenan por edad. Alcanza con definir compare.
+Persona "Ana" 30 == Persona "Ana" 99           -- True
+maximum [Persona "Ana" 30, Persona "Beto" 25]  -- Persona {nombre = "Ana", edad = 30}-}
+
