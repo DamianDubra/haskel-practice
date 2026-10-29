@@ -365,5 +365,41 @@ class Forma a where
 
 instance Forma Figura where
     area (Circulo r) = pi *r*r
+    area (Rectangulo b a) = b*a
     perimetro (Circulo r) = 2*pi*r
-    area
+    perimetro (Rectangulo b a) = 2* (b+a)
+
+{-8. Métodos por defecto y newtype
+Definí:
+
+class Monoide a where
+  neutro        :: a
+  combinar      :: a -> a -> a
+  combinarTodos :: [a] -> a   -- con implementación por defecto usando foldr
+e instancias para newtype Suma = Suma Int (suma), newtype Producto = Producto Int (producto) y [b] (concatenación). Las instancias no deben redefinir combinarTodos.
+
+combinarTodos [Suma 1, Suma 2, Suma 3]  -- Suma 6
+combinarTodos [Producto 2, Producto 5]  -- Producto 10
+combinarTodos ["ab", "cd", "e"]         -- "abcde"-}
+
+class Monoide a where
+  neutro        :: a
+  combinar      :: a -> a -> a
+  combinarTodos :: [a] -> a
+  combinarTodos xs = foldr combinar neutro xs
+
+newtype Suma = Suma Int deriving (Show)
+
+newtype Producto = Producto Int deriving(Show)
+
+instance Monoide Suma where
+    neutro = Suma 0
+    combinar (Suma a) (Suma b) = Suma (a + b)
+
+instance Monoide Producto where
+    neutro = Producto 1
+    combinar (Producto a) (Producto b) = Producto (a*b)
+
+instance Monoide [a] where
+    neutro = []
+    combinar = (++)
