@@ -1,4 +1,4 @@
-import Distribution.Simple.Utils (xargs)
+import Distribution.Simple.Utils (xargs, warn)
 
 --LAZY  
 
@@ -320,3 +320,50 @@ instance Ord Persona: se ordenan por edad. Alcanza con definir compare.
 Persona "Ana" 30 == Persona "Ana" 99           -- True
 maximum [Persona "Ana" 30, Persona "Beto" 25]  -- Persona {nombre = "Ana", edad = 30}-}
 
+data Persona = Persona { nombre :: String, edad :: Int }
+  deriving (Show)
+
+instance Eq Persona where
+    (==)  (Persona a b) (Persona x y)= a==x && b==y
+
+instance Ord Persona where
+    (Persona _ a) <= (Persona _ b) = a <= b
+
+
+{-6. Tu propia clase
+Definí class Describible a con describir :: a -> String e instancias para Bool, Int y [a] (esta última requiere que a también sea Describible).
+
+describir True           -- "verdadero"
+describir (3 :: Int)     -- "el entero 3"
+describir [True, False]  -- "lista de 2: verdadero falso"-}
+
+class Describible a where
+    palabra :: a -> String
+
+instance Describible Bool where
+    palabra (True) = "verdadero"
+    palabra (False) = "Falso"
+
+instance Describible Int where
+    palabra a = "el entero es" ++ show a
+
+instance Describible a => Describible [a] where  -- el priemro es la restriccion de que cualquer a tiene que ser describible, la segunda el tipo de cosa a describir
+    palabra []= []
+    palabra (x:xs) = palabra x ++", " ++ palabra xs
+
+{-7. Una clase, varios tipos
+Definí class Forma a con area y perimetro (ambas devuelven Double), e instancias para data Circulo = Circulo Double y data Rectangulo = Rectangulo Double Double.
+
+(area (Circulo 1), perimetro (Rectangulo 2 3))  -- (3.141592653589793,10.0)
+Para pensar: compará esto con el data Figura de tipos-de-datos.md. ¿Qué es más fácil con cada enfoque: agregar una figura nueva, o agregar una operación nueva?-}
+
+data Figura = Circulo Double | Rectangulo Double Double
+
+class Forma a where
+    area :: a -> Double
+    perimetro :: a -> Double
+
+instance Forma Figura where
+    area (Circulo r) = pi *r*r
+    perimetro (Circulo r) = 2*pi*r
+    area
