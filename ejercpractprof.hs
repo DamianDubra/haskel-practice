@@ -403,3 +403,25 @@ instance Monoide Producto where
 instance Monoide [a] where
     neutro = []
     combinar = (++)
+
+------------------------------------------------------------------------------------------------------
+--Definición recursiva de funciones usando pattern matching
+
+{-1. Sobre números
+factorial :: Integer -> Integer
+fib :: Int -> Integer (fib 0 = 0, fib 1 = 1)
+factorial 5        -- 120
+map fib [0 .. 10]  -- [0,1,1,2,3,5,8,13,21,34,55]-}
+
+factorial :: Integer -> Integer
+factorial n 
+    |n== 0 = 1
+    |n ==1 = 1
+    |otherwise = n* factorial (n-1)
+
+
+fib :: Int -> Integer
+fib n
+    |n== 0 = 0
+    |n== 1= 1
+    |otherwise = fib (n-1) + fib (n-2)
