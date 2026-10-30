@@ -425,3 +425,105 @@ fib n
     |n== 0 = 0
     |n== 1= 1
     |otherwise = fib (n-1) + fib (n-2)
+
+{-2. Sobre listas, sin Prelude
+sumaLista :: [Int] -> Int
+longitud :: [a] -> Int
+maximoLista :: [Int] -> Int (lista no vacía: el caso base es [x])
+(sumaLista [1, 2, 3], longitud "hola", maximoLista [3, 9, 2])  -- (6,4,9)-}
+
+sumaLista :: [Int] -> Int
+sumaLista [] = 0
+sumaLista (x:xs) = x + sumaLista xs
+
+longitud :: [a] -> Int
+longitud [] = 0
+longitud (x:xs) = 1+ longitud xs
+
+maximoLista :: [Int] -> Int
+maximoLista [x] = x
+maximoLista (x:xs) = if x > maximoLista xs then x else maximoLista xs
+
+{-3. Pertenencia
+pertenece :: Eq a => a -> [a] -> Bool
+
+pertenece 3 [1, 2, 3]  -- True
+pertenece 'z' "abc"    -- False-}
+
+pertenece :: Eq a => a -> [a] -> Bool
+pertenece _ []= False
+pertenece a (x:xs) = a == x || pertenece a xs
+
+{-4. Invertir
+invertir :: [a] -> [a], usando ++.
+
+invertir "hola"  -- "aloh"-}
+
+invertir :: [a] -> [a]
+invertir []= []
+invertir (x:xs) = invertir xs ++ [x]
+
+{-5. take y drop
+tomar :: Int -> [a] -> [a]
+soltar :: Int -> [a] -> [a]
+Tienen que funcionar aunque n sea más grande que la lista.
+
+(tomar 2 [1, 2, 3, 4], tomar 10 [1, 2])    -- ([1,2],[1,2])
+(soltar 2 [1, 2, 3, 4], soltar 10 [1, 2])  -- ([3,4],[])-}
+
+tomar :: Int -> [a] -> [a]
+tomar _ []=[]
+tomar 0 _ = []
+tomar n (x:xs) = [x] ++ tomar (n-1) xs
+
+soltar :: Int -> [a] -> [a]
+soltar _ []=[]
+soltar 0 xs = xs
+soltar n (x:xs) = soltar (n-1) xs
+
+{-6. Intercalar
+intercalar :: [a] -> [a] -> [a]: alterna elementos de las dos listas; cuando una se acaba, sigue con la otra. Pista: en la llamada recursiva, intercambiá las listas.
+
+intercalar [1, 3, 5] [2, 4, 6, 8, 10]  -- [1,2,3,4,5,6,8,10]-}
+
+intercalar :: [a] -> [a] -> [a]
+intercalar xs [] = xs
+intercalar [] xs = xs 
+intercalar (x1:xs1)(xs2) = [x1] ++ intercalar xs2 xs1 
+
+{-7. Euclides
+mcd :: Int -> Int -> Int, máximo común divisor con mod.
+
+mcd 48 18  -- 6
+mcd 7 5    -- 1-}
+
+mcd :: Int -> Int -> Int
+mcd a 0 = a
+mcd a b = mcd b (a `mod` b)
+
+{-8. Patrones de dos elementos
+aplanar :: [[a]] -> [a]
+comprimir :: Eq a => [a] -> [a]: elimina repetidos consecutivos. Pista: matcheá (x:y:ys).
+aplanar [[1, 2], [], [3]]  -- [1,2,3]
+comprimir "aaabccdd"       -- "abcd"-}
+
+aplanar :: [[a]] -> [a]
+aplanar [] = []
+aplanar (xs:xss)= xs ++ aplanar xss
+
+comprimir :: Eq a => [a] -> [a]
+comprimir []= []
+comprimir [a]= [a]
+comprimir (x:xs:xss)
+    |x== xs = comprimir(xs:xss)
+    |otherwise = x: comprimir (xs:xss)
+
+{-9. Dígitos
+digitos :: Int -> [Int], con div y mod.
+
+digitos 1234  -- [1,2,3,4]
+digitos 7     -- [7]-}
+
+digitos :: Int -> [Int]
+digitos 0 = []
+digitos a = digitos (a `div` 10) ++ [a `mod` 10]
