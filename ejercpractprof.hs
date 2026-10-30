@@ -528,3 +528,32 @@ digitos :: Int -> [Int]
 digitos a
     |a < 0 = [a]
     |otherwise = digitos (a `div` 10) ++ [a `mod` 10]
+
+
+{-10. Sobre un árbol
+Dado data Arbol a = Hoja | Nodo (Arbol a) a (Arbol a) (ya está en la plantilla):
+
+altura :: Arbol a -> Int (una Hoja tiene altura 0)
+cantidadNodos :: Arbol a -> Int
+let a = Nodo (Nodo Hoja 1 Hoja) 2 (Nodo (Nodo Hoja 3 Hoja) 4 Hoja)
+(altura a, cantidadNodos a)  -- (3,4)-}
+
+data Arbol a = Hoja | Nodo (Arbol a) a (Arbol a)
+
+altura :: Arbol a -> Int
+altura (Hoja) = 0
+altura (Nodo izq _ der) = 1+ max (altura izq) (altura der) -- el max se fija por cual camino encuentra mayor altura se puede hacer con if pero mas dificl
+
+cantidadNodos :: Arbol a -> Int
+cantidadNodos (Hoja)= 0
+cantidadNodos (Nodo izq _ der) = 1 + cantidadNodos izq + cantidadNodos der
+
+{-11. Recursión mutua
+esPar y esImpar :: Int -> Bool, definidas una en términos de la otra, sin usar mod ni even.
+
+(esPar 10, esImpar 7, esPar 7)  -- (True,True,False)-}
+
+esImpar :: Int -> Bool
+
+
+esPar:: Int -> Bool
