@@ -525,5 +525,6 @@ digitos 1234  -- [1,2,3,4]
 digitos 7     -- [7]-}
 
 digitos :: Int -> [Int]
-digitos 0 = []
-digitos a = digitos (a `div` 10) ++ [a `mod` 10]
+digitos a
+    |a < 0 = [a]
+    |otherwise = digitos (a `div` 10) ++ [a `mod` 10]
