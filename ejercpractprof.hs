@@ -553,7 +553,28 @@ esPar y esImpar :: Int -> Bool, definidas una en términos de la otra, sin usar 
 
 (esPar 10, esImpar 7, esPar 7)  -- (True,True,False)-}
 
+esPar :: Int -> Bool
+esPar 0 = True
+esPar n = esImpar (n - 1)
+
 esImpar :: Int -> Bool
+esImpar 0 = False
+esImpar n = esPar (n - 1)
 
+{-12. Acumulador
+invertirAcc :: [a] -> [a]: otra versión de invertir con una función auxiliar en el where que lleve un acumulador. No tiene que usar ++.
 
-esPar:: Int -> Bool
+invertirAcc [1, 2, 3]  -- [3,2,1]-}
+
+aux :: [a] -> Int
+aux (x:xs) = 1 + aux xs
+
+invertirAcc :: [a] -> [a]
+invertirAcc [] = []
+invertirAcc (x:xs) = xs 
+
+{-invertirAcc :: [a] -> [a]
+invertirAcc xs = aux xs []
+  where
+    aux []     acc = acc
+    aux (y:ys) acc = aux ys (y : acc)-}
