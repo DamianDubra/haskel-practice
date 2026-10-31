@@ -1,4 +1,8 @@
 import Distribution.Simple.Utils (xargs, warn)
+import System.Posix (SignalInfo(siginfoError))
+import Guia (Arbol(Vacio))
+import Language.Haskell.TH (Exp)
+import GHC.Compact.Serialized (SerializedCompact(SerializedCompact))
 
 --LAZY  
 
@@ -578,3 +582,158 @@ invertirAcc xs = aux xs []
   where
     aux []     acc = acc
     aux (y:ys) acc = aux ys (y : acc)-}
+-- no entendi
+
+---------------------------------------------------------------------------------------------------------------------------------------------
+--TIPOS DE DATOS
+
+{-1. Días de la semana
+Definí el tipo enumerado Dia con los siete días (de Lunes a Domingo), derivando Show, Eq, Enum y Bounded. Escribí esFinDeSemana :: Dia -> Bool.
+
+map esFinDeSemana [minBound .. maxBound]
+-- [False,False,False,False,False,True,True]-}
+
+data DiaSemana =  Lunes| Martes|Miercoles|Jueves|Viernes|Sabado|Domingo deriving (Show)
+
+esFinDeSemana :: DiaSemana -> Bool
+esFinDeSemana Sabado= True
+esFinDeSemana Domingo= True
+esFinDeSemana _ = False
+
+{-2. Día siguiente (cíclico)
+Escribí siguienteDia :: Dia -> Dia. Después del Domingo viene el Lunes.
+
+siguienteDia Domingo  -- Lunes
+siguienteDia Jueves   -- Viernes-}
+
+siguienteDia :: DiaSemana -> DiaSemana
+siguienteDia Lunes= Martes
+siguienteDia Martes= Miercoles
+siguienteDia Miercoles=Jueves
+siguienteDia Jueves=Viernes
+siguienteDia Viernes = Sabado
+siguienteDia Sabado = Domingo
+siguienteDia Domingo = Lunes
+
+{-3. Record Persona
+Definí el record Persona con los campos nombre :: String y edad :: Int, derivando Show y Eq. Escribí:
+
+cumplirAnios :: Persona -> Persona, usando la sintaxis de actualización de records.
+mayoresDeEdad :: [Persona] -> [String], que devuelve los nombres de quienes tienen 18 o más.
+cumplirAnios (Persona "Ana" 17)
+-- Persona {nombre = "Ana", edad = 18}
+
+mayoresDeEdad [Persona "Ana" 17, Persona "Beto" 30, Persona "Caro" 18]
+-- ["Beto","Caro"]-}
+data Persona' = Persona' {nombre' :: String, edad' :: Int} 
+    deriving (Show,Eq)
+
+
+cumplirAnios :: Persona' -> Persona'
+cumplirAnios (Persona' b  a) = Persona' b (a+1)
+
+mayoresDeEdad :: [Persona] -> [String]
+mayoresDeEdad [] =[]
+mayoresDeEdad (Persona a b:xs)
+    |b >= 18 = a: mayoresDeEdad xs
+    |otherwise = mayoresDeEdad xs
+
+mayoresDeEdad' :: [Persona] -> [String]
+mayoresDeEdad' xs = map nombre (filter(\p->edad p >=18)xs)
+
+{-4. Figuras
+Definí Figura con tres constructores: Circulo (radio), Rectangulo (base y altura) y Triangulo (tres lados), todos con Double. Escribí area :: Figura -> Double. Para el triángulo usá la fórmula de Herón: con s = (a + b + c) / 2, el área es sqrt (s * (s - a) * (s - b) * (s - c)).
+
+area (Rectangulo 3 4)   -- 12.0
+area (Triangulo 3 4 5)  -- 6.0-}
+
+data Figura' = Circulo' {radio ::Double} | Rectangulo' {base::Double, altura'::Double} | Triangulo {lado1 ::Double , lado2:: Double, lado3 ::Double}
+    
+area' :: Figura' -> Double
+area' (Circulo' radio) = radio * pi*radio
+area' (Rectangulo' base altura') = base *altura'
+area' (Triangulo lado1 lado2 lado3) = lado1 --me dio paja esa cuenta
+
+{-5. Tu propia lista
+Definí el tipo recursivo ListaNat con constructores Vacia y Cons Int ListaNat. Escribí longitudLN :: ListaNat -> Int, sumaLN :: ListaNat -> Int y aLista :: ListaNat -> [Int].
+
+let l = Cons 1 (Cons 2 (Cons 3 Vacia))
+(longitudLN l, sumaLN l, aLista l)  -- (3,6,[1,2,3])-}
+
+data ListaNat = Vacia| Cons Int ListaNat deriving(Show, Eq)
+
+longitudLN :: ListaNat -> Int
+longitudLN (Vacia) = 0
+longitudLN (Cons _ b) = 1 + longitudLN(b)
+
+sumaLN :: ListaNat -> Int
+sumaLN (Vacia) = 0
+sumaLN (Cons a b) = a + sumaLN(b)
+
+aLista :: ListaNat -> [Int]
+aLista (Vacia) = []
+aLista (Cons a b) = a: aLista (b)
+
+{-6. Árbol binario de búsqueda
+Definí Arbol a con constructores Hoja y Nodo (Arbol a) a (Arbol a). Escribí:
+
+insertar :: Ord a => a -> Arbol a -> Arbol a, que inserta manteniendo el orden (menores a la izquierda, mayores a la derecha, repetidos se ignoran).
+enOrden :: Arbol a -> [a], el recorrido en orden.
+enOrden (foldr insertar Hoja [5, 3, 8, 1, 4])  -- [1,3,4,5,8]-}
+
+
+data ArbolBin a = HojaBin | NodoBin (ArbolBin a) a (ArbolBin a) deriving(Show, Eq, Ord)
+
+
+insertar' :: Ord a => a -> ArbolBin a -> ArbolBin a
+insertar' a (HojaBin) = (NodoBin HojaBin a HojaBin)
+insertar' a (NodoBin izq b der)
+    |a<b = NodoBin (insertar' a izq) b der
+    |a>b = NodoBin izq b (insertar' a der)
+    |a==b = insertar' (NodoBin izq b der) 
+
+
+enOrden :: ArbolBin a -> [a]
+enOrden (HojaBin)= [] 
+enOrden (NodoBin izq a der) = enOrden(izq) ++ [a] ++ enOrden(der) 
+
+{-7. Expresiones aritméticas
+Definí Expr con constructores Num Int, Suma Expr Expr, Mult Expr Expr y Neg Expr. Escribí evaluar :: Expr -> Int y mostrar :: Expr -> String (con paréntesis alrededor de cada suma y producto).
+
+let e = Suma (Num 2) (Mult (Num 3) (Neg (Num 4)))
+mostrar e  -- "(2 + (3 * -4))"
+evaluar e  -- -10-}
+
+data Expr = Num Int | Suma' Expr Expr | Mult Expr Expr | Neg Expr deriving(Show, Eq) 
+
+evaluar :: Expr -> Int
+evaluar (Num a) = a
+evaluar (Neg a) =  - evaluar a
+evaluar (Suma' a b) =  evaluar a + evaluar b
+evaluar (Mult a b) = evaluar a* evaluar b
+
+mostrar :: Expr -> String
+mostrar (Num a) = Show a
+mostrar (Neg a) = "- " mostrar a
+mostrar (Suma' a b) = " ( " ++ mostrar a ++ " + " ++ mostrar b ++ " ) "
+mostrar (Mult a b) = " ( " ++ mostrar a ++ " * " ++ mostrar b ++ " ) "
+
+{-8. Records anidados
+Definí el record Cuenta con campos titular :: Persona y saldo :: Double. Escribí:
+
+depositar :: Double -> Cuenta -> Cuenta
+extraer :: Double -> Cuenta -> Maybe Cuenta, que devuelve Nothing si el saldo no alcanza.
+let c = Cuenta (Persona "Ana" 17) 100
+saldo (depositar 50 c)                                   -- 150.0
+(fmap saldo (extraer 30 c), fmap saldo (extraer 500 c))  -- (Just 70.0,Nothing)-}
+
+data Cuenta = Cuenta {titular::Persona', saldo :: Double} deriving (Show, Eq)
+
+depositar :: Double -> Cuenta -> Cuenta
+depositar 0 (Cuenta nombre saldo) = Cuenta nombre saldo
+depositar n (Cuenta nombre saldo) =  Cuenta nombre (saldo +)
+
+extraer :: Double -> Cuenta -> Maybe Cuenta
+extraer n (Cuenta nombre saldo)
+    |saldo < n = Nothing
+    |otherwise = Just (Cuenta nombre (saldo -n))
